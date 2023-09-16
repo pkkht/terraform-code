@@ -5,7 +5,7 @@ provider "aws" {
 variable "server_port"{
   type = number
   description = "the port for HTTP"
-  default = 80
+  default = 8082
 }
 resource "aws_instance" "name" {
   ami = "ami-0310483fb2b488153"
@@ -14,7 +14,7 @@ resource "aws_instance" "name" {
   user_data = <<-EOF
               #!/bin/bash
               echo "Hello, World" > index.html
-              sudo busybox httpd -f -p 80 &
+              sudo busybox httpd -f -p ${var.server_port} &
               EOF
   
   user_data_replace_on_change = true
@@ -33,8 +33,8 @@ resource "aws_security_group" "instance"{
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port = 80
-    to_port = 80
+    from_port = var.server_port
+    to_port = var.server_port
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
