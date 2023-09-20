@@ -2,6 +2,16 @@ provider "aws" {
   region = "ap-southeast-2"
 }
 
+terraform {
+  cloud {
+    organization = "tf-playground-hariharan"
+
+    workspaces {
+      name = "terraform-code"
+    }
+  }
+}
+
 variable "server_port"{
   type = number
   description = "the port for HTTP"
