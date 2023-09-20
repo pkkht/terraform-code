@@ -12,10 +12,10 @@ terraform {
   }
 }
 
-variable "server_port"{
-  type = number
+variable "server_port" {
+  type        = number
   description = "the port for HTTP"
-  default = 8083
+  default     = 8083
 }
 
 data "aws_vpc" "default" {
@@ -30,52 +30,52 @@ data "aws_subnets" "default" {
 }
 
 resource "aws_launch_configuration" "example" {
-  image_id = "ami-0310483fb2b488153"
-  instance_type = "t2.micro"
+  image_id        = "ami-0310483fb2b488153"
+  instance_type   = "t2.micro"
   security_groups = [aws_security_group.instance.id]
-  user_data = <<-EOF
+  user_data       = <<-EOF
               #!/bin/bash
               echo "Hello, World" > index.html
               sudo busybox httpd -f -p ${var.server_port} &
               EOF
 }
 
-resource "aws_security_group" "instance"{
-  name="terraform-example-security-instance"
+resource "aws_security_group" "instance" {
+  name = "terraform-example-security-instance"
   ingress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port = var.server_port
-    to_port = var.server_port
-    protocol = "tcp"
+    from_port   = var.server_port
+    to_port     = var.server_port
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags={
-    Name="terraform-example"
+  tags = {
+    Name = "terraform-example"
   }
-} 
+}
 
 resource "aws_autoscaling_group" "example" {
   launch_configuration = aws_launch_configuration.example.name
   vpc_zone_identifier  = data.aws_subnets.default.ids
-  
+
   target_group_arns = [aws_lb_target_group.asg.arn]
   health_check_type = "ELB"
 
