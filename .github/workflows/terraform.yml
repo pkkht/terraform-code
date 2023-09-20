@@ -62,6 +62,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: 'EC2-auto-scaling-group-alb'
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -72,8 +73,6 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        tf_actions_working_dir: 'EC2-auto-scaling-group-alb'
-        tf_actions_comment: true
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
